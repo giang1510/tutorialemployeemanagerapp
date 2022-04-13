@@ -1,4 +1,6 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { Employee } from './employee';
 import { EmployeeService } from './employee.service';
 
@@ -19,7 +21,18 @@ export class AppComponent implements OnInit{
   public getEmployees(): void{
     this.employeeService.getEmployees().subscribe({
       next: (response: Employee[]) => this.employees = response,
-      error: (error) => alert(error.message)
+      error: (error:HttpErrorResponse) => alert(error.message)
+    });
+  }
+
+  public onAddEmloyee(addForm: NgForm): void{
+    document.getElementById('add-employee-form')?.click();
+    this.employeeService.addEmployee(addForm.value).subscribe({
+      next: (response: Employee) => {
+        console.log(response);
+        this.getEmployees();
+      },
+      error: (error:HttpErrorResponse) => alert(error.message)
     });
   }
 
