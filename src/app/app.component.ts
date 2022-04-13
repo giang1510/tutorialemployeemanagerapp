@@ -12,6 +12,7 @@ import { EmployeeService } from './employee.service';
 export class AppComponent implements OnInit{
   public employees: Employee[] = [];
   public editEmployee: Employee|undefined;
+  public deleteEmployee: Employee|undefined;
 
   constructor(private employeeService: EmployeeService){}
 
@@ -52,6 +53,18 @@ export class AppComponent implements OnInit{
     });
   }
 
+  public onDeleteEmloyee(employeeId: number|undefined): void{
+    this.employeeService.deleteEmployee(employeeId).subscribe({
+      next: response => {
+        console.log(response);
+        this.getEmployees();
+      },
+      error: (error:HttpErrorResponse) => {
+        alert(error.message);
+      }
+    });
+  }
+
   public onOpenModal(employee: Employee|undefined, mode: string): void{
     const container = document.getElementById('main-container');
     const btn = document.createElement('button');
@@ -66,6 +79,7 @@ export class AppComponent implements OnInit{
       btn.setAttribute('data-target', '#updateEmployeeModal');
     }
     else if(mode === 'delete'){
+      this.deleteEmployee = employee;
       btn.setAttribute('data-target', '#deleteEmployeeModal');
     }
     container?.appendChild(btn);
