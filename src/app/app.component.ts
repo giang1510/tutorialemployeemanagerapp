@@ -11,6 +11,7 @@ import { EmployeeService } from './employee.service';
 })
 export class AppComponent implements OnInit{
   public employees: Employee[] = [];
+  public editEmployee: Employee|undefined;
 
   constructor(private employeeService: EmployeeService){}
 
@@ -31,12 +32,27 @@ export class AppComponent implements OnInit{
       next: (response: Employee) => {
         console.log(response);
         this.getEmployees();
+        addForm.reset();
+      },
+      error: (error:HttpErrorResponse) => {
+        alert(error.message);
+        addForm.reset();
+      }
+    });
+  }
+
+  public onUpdateEmloyee(employee: Employee): void{
+    document.getElementById('add-employee-form')?.click();
+    this.employeeService.updateEmployee(employee).subscribe({
+      next: (response: Employee) => {
+        console.log(response);
+        this.getEmployees();
       },
       error: (error:HttpErrorResponse) => alert(error.message)
     });
   }
 
-  public onOpenModal(employee: Employee|null, mode: string): void{
+  public onOpenModal(employee: Employee|undefined, mode: string): void{
     const container = document.getElementById('main-container');
     const btn = document.createElement('button');
     btn.type = 'button';
@@ -46,6 +62,7 @@ export class AppComponent implements OnInit{
       btn.setAttribute('data-target', '#addEmployeeModal');
     }
     else if(mode === 'edit'){
+      this.editEmployee = employee;
       btn.setAttribute('data-target', '#updateEmployeeModal');
     }
     else if(mode === 'delete'){
